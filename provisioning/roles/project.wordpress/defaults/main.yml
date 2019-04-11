@@ -1,0 +1,3 @@
+---
+# defaults file for project.wordpress
+url_server: wordpress.ec2.com

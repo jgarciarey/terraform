@@ -1,0 +1,11 @@
+---
+# tasks file for project.php
+- name: Install PHP
+  apt: 
+    name:
+      - php7.2
+      - php7.2-gd 
+      - php7.2-ssh2
+      - php7.2-mysql
+      - libapache2-mod-php7.2
+    state: present

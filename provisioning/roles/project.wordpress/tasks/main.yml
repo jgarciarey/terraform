@@ -1,0 +1,35 @@
+---
+# tasks file for project.wordpress
+- name: Copy wordpress.zip in tmp
+  copy: src=wordpress.zip dest=/tmp/wordpress.zip
+
+- name: Create project folder
+  file: dest=/var/www/{{ url_server }} state=directory
+
+- name: Unzip wordpress
+  unarchive: src=/tmp/wordpress.zip dest=/tmp creates=/tmp/wordpress/wp-settings.php copy=no
+
+- name: Update default Apache site
+  lineinfile: 
+    dest=/etc/apache2/sites-enabled/000-default.conf 
+    regexp="(.)+DocumentRoot /var/www/html"
+    line="DocumentRoot /var/www/{{ url_server }}"
+  notify:
+    - Restart apache
+
+- name: Copy wordpress files
+  command: cp -a /tmp/wordpress/. /var/www/{{ url_server }} creates=/var/www/{{ url_server }}/wp-settings.php
+
+- name: Copy sample config file
+  command: mv /var/www/{{ url_server }}/wp-config-sample.php /var/www/{{ url_server }}/wp-config.php creates=/var/www/{{ url_server }}/wp-config.php
+
+- name: Update WordPress config file
+  lineinfile:
+    dest=/var/www/{{ url_server }}/wp-config.php
+    regexp="{{ item.regexp }}"
+    line="{{ item.line }}"
+  with_items:
+    - {'regexp': "define\\('DB_NAME', '(.)+'\\);", 'line': "define('DB_NAME', '{{wp_mysql_db}}');"}        
+    - {'regexp': "define\\('DB_USER', '(.)+'\\);", 'line': "define('DB_USER', '{{wp_mysql_user}}');"}        
+    - {'regexp': "define\\('DB_PASSWORD', '(.)+'\\);", 'line': "define('DB_PASSWORD', '{{wp_mysql_password}}');"}
+

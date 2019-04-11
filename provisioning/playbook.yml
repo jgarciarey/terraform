@@ -1,0 +1,19 @@
+- hosts: all
+  become: true
+  gather_facts: no
+  vars:
+    ansible_user: ubuntu
+
+  pre_tasks:
+    - name: Install Python
+      raw: 'apt-get -y install python'
+
+  roles:
+    - project.common
+    - project.mysql
+    - project.php
+    - project.server
+    - project.wordpress
+
+
+

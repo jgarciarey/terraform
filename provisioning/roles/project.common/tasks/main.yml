@@ -1,0 +1,10 @@
+---
+# tasks file for project.common
+- name: Install required tools
+  apt: 
+    name:
+      - unzip
+      - php7.2-mysql
+    state: present
+    allow_unauthenticated: yes
+    force: true
